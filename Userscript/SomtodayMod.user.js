@@ -1518,7 +1518,7 @@ function onload() {
                     const dateObject = ariaLabelToDate(element.classList.contains('week') ? element.nextElementSibling : element);
                     homework.push({
                         'id': (Math.random() + '' + window.performance.now()).replaceAll('.', ''),
-                        'date': dateObject,
+                        'date': dateObject.toISOString(), // Store as ISO string for reliable parsing
                         'subject': id('mod-homework-subject').value,
                         'description': id('mod-homework-description').value,
                         'done': (id('studiewijzer-afspraak-toevoegen-select').children[0].classList.contains('active') ? false : {}),
@@ -1573,7 +1573,24 @@ function onload() {
                         }
                     }
                 }
-                let homeworkDate = new Date(Date.parse(homework[i].date));
+                // Robust date parsing that handles ISO strings and various formats
+                let homeworkDate;
+                try {
+                    // Try parsing as ISO string first (most reliable)
+                    if (typeof homework[i].date === 'string' && homework[i].date.includes('T')) {
+                        homeworkDate = new Date(homework[i].date);
+                    } else {
+                        homeworkDate = new Date(Date.parse(homework[i].date));
+                    }
+                    // Validate the date is valid
+                    if (isNaN(homeworkDate.getTime())) {
+                        console.warn('Invalid homework date:', homework[i].date);
+                        return; // Skip this homework item
+                    }
+                } catch (e) {
+                    console.error('Error parsing homework date:', homework[i].date, e);
+                    return; // Skip this homework item
+                }
                 const showIfOnce = currentStudiewijzerDate.getFullYear() == homeworkDate.getFullYear() && currentStudiewijzerDate.getMonth() == homeworkDate.getMonth() && currentStudiewijzerDate.getDate() == homeworkDate.getDate();
                 const showIfWeekly = homework[i].returning == '1' && currentStudiewijzerDate.getTime() >= homeworkDate.getTime() && currentStudiewijzerDate.getDay() == homeworkDate.getDay();
                 const showIfMonthly = homework[i].returning == '2' && currentStudiewijzerDate.getTime() >= homeworkDate.getTime() && currentStudiewijzerDate.getDate() == homeworkDate.getDate() && !isWeek;
