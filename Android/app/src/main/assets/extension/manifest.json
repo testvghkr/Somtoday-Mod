@@ -39,7 +39,9 @@
   "permissions": [
     "storage",
     "unlimitedStorage",
-    "geckoViewAddons"
+    "geckoViewAddons",
+    "nativeMessaging",
+    "nativeMessagingFromContent"
   ],
   "host_permissions": [
     "*://*.somtoday.nl/*",

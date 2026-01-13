@@ -1,5 +1,16 @@
 // MAIN FUNCTIONS
 
+// CACHE FOR ANDROID APP
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const htmlContent = document.documentElement.outerHTML;
+        browser.runtime.sendNativeMessage("somtodaymod", {
+            type: "SAVE_CACHE",
+            html: htmlContent
+        });
+    }, 2000);
+});
+
 function onload() {
 
     // Make sure to have only one instance of the mod active at a time
